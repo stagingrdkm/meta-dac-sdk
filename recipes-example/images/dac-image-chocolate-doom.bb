@@ -1,6 +1,6 @@
 SUMMARY = "DAC chocolate-doom port"
 
-inherit  dac-image-chocolate-doom
+inherit  dac-image-sdl
 
 IMAGE_INSTALL = "chocolate-doom"
 
