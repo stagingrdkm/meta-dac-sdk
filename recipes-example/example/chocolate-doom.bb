@@ -14,8 +14,14 @@ S = "${WORKDIR}/git/"
 
 SRC_URI = " \
     git://github.com/chocolate-doom/chocolate-doom.git;protocol=http;branch=master;rev=a378d0288a77ef8efff439c5e250e82b03e2c502 \
-    file://sdl_gl_setattribute.patch"
+    file://sdl_gl_setattribute.patch \
+    file://doom1.wad \
+    "
 
 inherit autotools pkgconfig
+
+do_install_append() {
+    install -m 0644 ${WORKDIR}/doom1.wad ${D}${datadir}
+}
 
 FILES_${PN} += "${datadir}/*"
