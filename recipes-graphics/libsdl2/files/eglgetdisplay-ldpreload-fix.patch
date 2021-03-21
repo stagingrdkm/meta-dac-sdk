@@ -1,0 +1,33 @@
+diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
+index a8a1485..033d843 100644
+--- a/src/video/SDL_egl.c
++++ b/src/video/SDL_egl.c
+@@ -19,6 +19,7 @@
+  *  3. This notice may not be removed or altered from any source distribution.
+  */
+ #include "../SDL_internal.h"
++#include <dlfcn.h>
+ 
+ #if SDL_VIDEO_OPENGL_EGL
+ 
+@@ -408,9 +409,19 @@ SDL_EGL_LoadLibraryOnly(_THIS, const char *egl_path)
+ #endif
+ 
+     _this->egl_data->dll_handle = dll_handle;
++     /* Check if the symbol is not already defined either by
++        using aliasing or LD_PRELOAD.*/
++    _this->egl_data->eglGetDisplay = SDL_LoadFunction(RTLD_DEFAULT, "eglGetDisplay");
++
++    //TODO remove debug print
++    if(_this->egl_data->eglGetDisplay)
++    {
++        printf("eglGetDisplay loaded by aliasing or LD_PRELOAD\n");
++    }
+ 
+     /* Load new function pointers */
+-    LOAD_FUNC(eglGetDisplay);
++    if(!_this->egl_data->eglGetDisplay)
++        LOAD_FUNC(eglGetDisplay);
+     LOAD_FUNC(eglInitialize);
+     LOAD_FUNC(eglTerminate);
+     LOAD_FUNC(eglGetProcAddress);
