@@ -1,5 +1,5 @@
 diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
-index a8a1485..033d843 100644
+index a8a1485..e80ebf3 100644
 --- a/src/video/SDL_egl.c
 +++ b/src/video/SDL_egl.c
 @@ -19,6 +19,7 @@
@@ -10,7 +10,17 @@ index a8a1485..033d843 100644
  
  #if SDL_VIDEO_OPENGL_EGL
  
-@@ -408,9 +409,19 @@ SDL_EGL_LoadLibraryOnly(_THIS, const char *egl_path)
+@@ -259,7 +260,9 @@ SDL_EGL_UnloadLibrary(_THIS)
+ {
+     if (_this->egl_data) {
+         if (_this->egl_data->egl_display) {
++            printf("SDL: before eglTerminate.\n");
+             _this->egl_data->eglTerminate(_this->egl_data->egl_display);
++            printf("SDL: after eglTerminate.\n");
+             _this->egl_data->egl_display = NULL;
+         }
+ 
+@@ -408,9 +411,19 @@ SDL_EGL_LoadLibraryOnly(_THIS, const char *egl_path)
  #endif
  
      _this->egl_data->dll_handle = dll_handle;
@@ -31,3 +41,140 @@ index a8a1485..033d843 100644
      LOAD_FUNC(eglInitialize);
      LOAD_FUNC(eglTerminate);
      LOAD_FUNC(eglGetProcAddress);
+@@ -502,17 +515,23 @@ SDL_EGL_LoadLibrary(_THIS, const char *egl_path, NativeDisplayType native_displa
+         *_this->gl_config.driver_path = '\0';
+         return SDL_SetError("Could not get EGL display");
+     }
++
++    printf("SDL: After eglGetDisplay call.\n");
+     
+     if (_this->egl_data->eglInitialize(_this->egl_data->egl_display, NULL, NULL) != EGL_TRUE) {
+         _this->gl_config.driver_loaded = 0;
+         *_this->gl_config.driver_path = '\0';
+         return SDL_SetError("Could not initialize EGL");
+     }
++
++    printf("SDL: After eglInitialize call.\n");
+ #endif
+ 
+     /* Get the EGL version with a valid egl_display, for EGL <= 1.4 */
+     SDL_EGL_GetVersion(_this);
+ 
++    printf("SDL: After SDL_EGL_GetVersion call.\n");
++
+     _this->egl_data->is_offscreen = 0;
+ 
+     return 0;
+@@ -917,10 +936,13 @@ SDL_EGL_CreateContext(_THIS, EGLSurface egl_surface)
+         _this->egl_data->eglBindAPI(EGL_OPENGL_API);
+     }
+ 
++    printf("SDL: before eglCreateContext.\n");
+     egl_context = _this->egl_data->eglCreateContext(_this->egl_data->egl_display,
+                                       _this->egl_data->egl_config,
+                                       share_context, attribs);
+ 
++    printf("SDL: after eglCreateContext.\n");
++
+     if (egl_context == EGL_NO_CONTEXT) {
+         SDL_EGL_SetError("Could not create EGL context", "eglCreateContext");
+         return NULL;
+@@ -953,7 +975,7 @@ SDL_EGL_MakeCurrent(_THIS, EGLSurface egl_surface, SDL_GLContext context)
+     if (!_this->egl_data) {
+         return SDL_SetError("OpenGL not initialized");
+     }
+-    
++    printf("SDL: before eglMakeCurrent\n");
+     /* The android emulator crashes badly if you try to eglMakeCurrent 
+      * with a valid context and invalid surface, so we have to check for both here.
+      */
+@@ -965,7 +987,7 @@ SDL_EGL_MakeCurrent(_THIS, EGLSurface egl_surface, SDL_GLContext context)
+             return SDL_EGL_SetError("Unable to make EGL context current", "eglMakeCurrent");
+         }
+     }
+-      
++    printf("SDL: after eglMakeCurrent\n");
+     return 0;
+ }
+ 
+@@ -977,12 +999,13 @@ SDL_EGL_SetSwapInterval(_THIS, int interval)
+     if (!_this->egl_data) {
+         return SDL_SetError("EGL not initialized");
+     }
+-    
++    printf("SDL: before eglSwapInterval\n");
+     status = _this->egl_data->eglSwapInterval(_this->egl_data->egl_display, interval);
+     if (status == EGL_TRUE) {
+         _this->egl_data->egl_swapinterval = interval;
+         return 0;
+     }
++    printf("SDL: after eglSwapInterval\n");
+     
+     return SDL_EGL_SetError("Unable to set the EGL swap interval", "eglSwapInterval");
+ }
+@@ -1001,9 +1024,11 @@ SDL_EGL_GetSwapInterval(_THIS)
+ int
+ SDL_EGL_SwapBuffers(_THIS, EGLSurface egl_surface)
+ {
++    printf("SDL: before eglSwapBuffers\n");
+     if (!_this->egl_data->eglSwapBuffers(_this->egl_data->egl_display, egl_surface)) {
+         return SDL_EGL_SetError("unable to show color buffer in an OS-native window", "eglSwapBuffers");
+     }
++    printf("SDL: after eglSwapBuffers\n");
+     return 0;
+ }
+ 
+@@ -1016,11 +1041,13 @@ SDL_EGL_DeleteContext(_THIS, SDL_GLContext context)
+     if (!_this->egl_data) {
+         return;
+     }
++    printf("SDL: before eglDestroyContext\n");
+     
+     if (egl_context != NULL && egl_context != EGL_NO_CONTEXT) {
+         _this->egl_data->eglDestroyContext(_this->egl_data->egl_display, egl_context);
+     }
+-        
++    printf("SDL: after eglDestroyContext\n");
++
+ }
+ 
+ EGLSurface *
+@@ -1067,6 +1094,8 @@ SDL_EGL_CreateSurface(_THIS, NativeWindowType nw)
+     }
+ 
+     attribs[attr++] = EGL_NONE;
++
++    printf("SDL: before eglCreateWindowSurface call.\n");
+     
+     surface = _this->egl_data->eglCreateWindowSurface(
+             _this->egl_data->egl_display,
+@@ -1075,6 +1104,7 @@ SDL_EGL_CreateSurface(_THIS, NativeWindowType nw)
+     if (surface == EGL_NO_SURFACE) {
+         SDL_EGL_SetError("unable to create an EGL window surface", "eglCreateWindowSurface");
+     }
++    printf("SDL: after eglCreateWindowSurface call.\n");
+     return surface;
+ }
+ 
+@@ -1090,7 +1120,7 @@ SDL_EGL_CreateOffscreenSurface(_THIS, int width, int height)
+     if (SDL_EGL_ChooseConfig(_this) != 0) {
+         return EGL_NO_SURFACE;
+     }
+-
++    printf("SDL: before eglCreatePbufferSurface\n");
+     return _this->egl_data->eglCreatePbufferSurface(
+         _this->egl_data->egl_display,
+         _this->egl_data->egl_config,
+@@ -1104,9 +1134,12 @@ SDL_EGL_DestroySurface(_THIS, EGLSurface egl_surface)
+         return;
+     }
+     
++
++    printf("SDL: before eglDestroySurface call.\n");
+     if (egl_surface != EGL_NO_SURFACE) {
+         _this->egl_data->eglDestroySurface(_this->egl_data->egl_display, egl_surface);
+     }
++    printf("SDL: after eglDestroySurface call.\n");
+ }
+ 
+ #endif /* SDL_VIDEO_OPENGL_EGL */
