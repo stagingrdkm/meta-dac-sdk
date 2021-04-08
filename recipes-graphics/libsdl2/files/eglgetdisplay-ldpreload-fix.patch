@@ -1,5 +1,5 @@
 diff --git a/src/video/SDL_egl.c b/src/video/SDL_egl.c
-index a8a1485..e80ebf3 100644
+index a8a1485..0d7292a 100644
 --- a/src/video/SDL_egl.c
 +++ b/src/video/SDL_egl.c
 @@ -19,6 +19,7 @@
@@ -10,7 +10,20 @@ index a8a1485..e80ebf3 100644
  
  #if SDL_VIDEO_OPENGL_EGL
  
-@@ -259,7 +260,9 @@ SDL_EGL_UnloadLibrary(_THIS)
+@@ -94,7 +95,11 @@
+ _this->egl_data->NAME = (void *)NAME;
+ #else
+ #define LOAD_FUNC(NAME) \
+-_this->egl_data->NAME = SDL_LoadFunction(_this->egl_data->dll_handle, #NAME); \
++_this->egl_data->NAME = SDL_LoadFunction(RTLD_DEFAULT, #NAME); \
++if (!_this->egl_data->NAME) \
++{ \
++    _this->egl_data->NAME = SDL_LoadFunction(_this->egl_data->dll_handle, #NAME); \
++} \
+ if (!_this->egl_data->NAME) \
+ { \
+     return SDL_SetError("Could not retrieve EGL function " #NAME); \
+@@ -259,7 +264,9 @@ SDL_EGL_UnloadLibrary(_THIS)
  {
      if (_this->egl_data) {
          if (_this->egl_data->egl_display) {
@@ -20,28 +33,7 @@ index a8a1485..e80ebf3 100644
              _this->egl_data->egl_display = NULL;
          }
  
-@@ -408,9 +411,19 @@ SDL_EGL_LoadLibraryOnly(_THIS, const char *egl_path)
- #endif
- 
-     _this->egl_data->dll_handle = dll_handle;
-+     /* Check if the symbol is not already defined either by
-+        using aliasing or LD_PRELOAD.*/
-+    _this->egl_data->eglGetDisplay = SDL_LoadFunction(RTLD_DEFAULT, "eglGetDisplay");
-+
-+    //TODO remove debug print
-+    if(_this->egl_data->eglGetDisplay)
-+    {
-+        printf("eglGetDisplay loaded by aliasing or LD_PRELOAD\n");
-+    }
- 
-     /* Load new function pointers */
--    LOAD_FUNC(eglGetDisplay);
-+    if(!_this->egl_data->eglGetDisplay)
-+        LOAD_FUNC(eglGetDisplay);
-     LOAD_FUNC(eglInitialize);
-     LOAD_FUNC(eglTerminate);
-     LOAD_FUNC(eglGetProcAddress);
-@@ -502,17 +515,23 @@ SDL_EGL_LoadLibrary(_THIS, const char *egl_path, NativeDisplayType native_displa
+@@ -502,17 +509,23 @@ SDL_EGL_LoadLibrary(_THIS, const char *egl_path, NativeDisplayType native_displa
          *_this->gl_config.driver_path = '\0';
          return SDL_SetError("Could not get EGL display");
      }
@@ -65,7 +57,7 @@ index a8a1485..e80ebf3 100644
      _this->egl_data->is_offscreen = 0;
  
      return 0;
-@@ -917,10 +936,13 @@ SDL_EGL_CreateContext(_THIS, EGLSurface egl_surface)
+@@ -917,10 +930,13 @@ SDL_EGL_CreateContext(_THIS, EGLSurface egl_surface)
          _this->egl_data->eglBindAPI(EGL_OPENGL_API);
      }
  
@@ -79,7 +71,7 @@ index a8a1485..e80ebf3 100644
      if (egl_context == EGL_NO_CONTEXT) {
          SDL_EGL_SetError("Could not create EGL context", "eglCreateContext");
          return NULL;
-@@ -953,7 +975,7 @@ SDL_EGL_MakeCurrent(_THIS, EGLSurface egl_surface, SDL_GLContext context)
+@@ -953,7 +969,7 @@ SDL_EGL_MakeCurrent(_THIS, EGLSurface egl_surface, SDL_GLContext context)
      if (!_this->egl_data) {
          return SDL_SetError("OpenGL not initialized");
      }
@@ -88,7 +80,7 @@ index a8a1485..e80ebf3 100644
      /* The android emulator crashes badly if you try to eglMakeCurrent 
       * with a valid context and invalid surface, so we have to check for both here.
       */
-@@ -965,7 +987,7 @@ SDL_EGL_MakeCurrent(_THIS, EGLSurface egl_surface, SDL_GLContext context)
+@@ -965,7 +981,7 @@ SDL_EGL_MakeCurrent(_THIS, EGLSurface egl_surface, SDL_GLContext context)
              return SDL_EGL_SetError("Unable to make EGL context current", "eglMakeCurrent");
          }
      }
@@ -97,7 +89,7 @@ index a8a1485..e80ebf3 100644
      return 0;
  }
  
-@@ -977,12 +999,13 @@ SDL_EGL_SetSwapInterval(_THIS, int interval)
+@@ -977,12 +993,13 @@ SDL_EGL_SetSwapInterval(_THIS, int interval)
      if (!_this->egl_data) {
          return SDL_SetError("EGL not initialized");
      }
@@ -112,7 +104,7 @@ index a8a1485..e80ebf3 100644
      
      return SDL_EGL_SetError("Unable to set the EGL swap interval", "eglSwapInterval");
  }
-@@ -1001,9 +1024,11 @@ SDL_EGL_GetSwapInterval(_THIS)
+@@ -1001,9 +1018,11 @@ SDL_EGL_GetSwapInterval(_THIS)
  int
  SDL_EGL_SwapBuffers(_THIS, EGLSurface egl_surface)
  {
@@ -124,7 +116,7 @@ index a8a1485..e80ebf3 100644
      return 0;
  }
  
-@@ -1016,11 +1041,13 @@ SDL_EGL_DeleteContext(_THIS, SDL_GLContext context)
+@@ -1016,11 +1035,13 @@ SDL_EGL_DeleteContext(_THIS, SDL_GLContext context)
      if (!_this->egl_data) {
          return;
      }
@@ -139,7 +131,7 @@ index a8a1485..e80ebf3 100644
  }
  
  EGLSurface *
-@@ -1067,6 +1094,8 @@ SDL_EGL_CreateSurface(_THIS, NativeWindowType nw)
+@@ -1067,6 +1088,8 @@ SDL_EGL_CreateSurface(_THIS, NativeWindowType nw)
      }
  
      attribs[attr++] = EGL_NONE;
@@ -148,7 +140,7 @@ index a8a1485..e80ebf3 100644
      
      surface = _this->egl_data->eglCreateWindowSurface(
              _this->egl_data->egl_display,
-@@ -1075,6 +1104,7 @@ SDL_EGL_CreateSurface(_THIS, NativeWindowType nw)
+@@ -1075,6 +1098,7 @@ SDL_EGL_CreateSurface(_THIS, NativeWindowType nw)
      if (surface == EGL_NO_SURFACE) {
          SDL_EGL_SetError("unable to create an EGL window surface", "eglCreateWindowSurface");
      }
@@ -156,7 +148,7 @@ index a8a1485..e80ebf3 100644
      return surface;
  }
  
-@@ -1090,7 +1120,7 @@ SDL_EGL_CreateOffscreenSurface(_THIS, int width, int height)
+@@ -1090,7 +1114,7 @@ SDL_EGL_CreateOffscreenSurface(_THIS, int width, int height)
      if (SDL_EGL_ChooseConfig(_this) != 0) {
          return EGL_NO_SURFACE;
      }
@@ -165,7 +157,7 @@ index a8a1485..e80ebf3 100644
      return _this->egl_data->eglCreatePbufferSurface(
          _this->egl_data->egl_display,
          _this->egl_data->egl_config,
-@@ -1104,9 +1134,12 @@ SDL_EGL_DestroySurface(_THIS, EGLSurface egl_surface)
+@@ -1104,9 +1128,12 @@ SDL_EGL_DestroySurface(_THIS, EGLSurface egl_surface)
          return;
      }
      
