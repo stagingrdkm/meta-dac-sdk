@@ -3,11 +3,4 @@ bbclass, inc and conf files) are MIT licensed unless otherwise stated.
 Source code included in tree for individual recipes is under the
 LICENSE stated in the associated recipe (.bb file) unless otherwise
 stated. All other files to have license as explicitly stated or default
-to RDK Management licensed.
-
-RDK Management License:
-------------------------
-This file (and its contents) are the intellectual property of Liberty Global B.V.
-It may not be used, copied, distributed or otherwise disclosed in whole or in
-part without the express written permission of Liberty Global B.V.
-The RDK License agreement constitutes express written consent by Liberty Global.
+to Apache-2.0.
