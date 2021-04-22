@@ -1,7 +1,7 @@
 SUMMARY = "Example wayland egl test application"
 
 LICENSE = "Unlicense"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=0d2f730e01d19e8f457a65e092b60770"
+LIC_FILES_CHKSUM = "file://UNLICENSE;md5=7246f848faa4e9c9fc0ea91122d6e680"
 
 DEPENDS =  "virtual/egl virtual/libgles2 libepoxy libxkbcommon"
 
@@ -10,7 +10,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 S = "${WORKDIR}/git/wayland-egl-test"
 
 SRC_URI = " \
-    git://github.com/stagingrdkm/dac-examples-src.git;protocol=http;branch=master;rev=927725b156d7be6ceb98301422a2cb5650ae8cd6 \
+    git://github.com/stagingrdkm/dac-examples-src.git;protocol=http;branch=master;rev=02037873b38f540f6a4b683026791db0f021872c \
 "
 
 inherit pkgconfig
