@@ -1,0 +1,21 @@
+diff --git a/source/NoVAContentDecryptionClearKeyDelegate.cpp b/source/NoVAContentDecryptionClearKeyDelegate.cpp
+index db9bb2d..59094ab 100644
+--- a/source/NoVAContentDecryptionClearKeyDelegate.cpp
++++ b/source/NoVAContentDecryptionClearKeyDelegate.cpp
+@@ -25,6 +25,7 @@
+ 
+ #include <openssl/aes.h>
+ #include <openssl/evp.h>
++#include <openssl/modes.h>
+ 
+ #include <jsoncpp/json.h>
+ #include <stdlib.h>
+@@ -1181,7 +1182,7 @@ NoVAContentDecryptionClearKeyDelegate::decryptData(const std::vector<uint8_t> &k
+     unsigned int num = 0;
+ 
+     memcpy(initVecBuf, &initVector[0], initVector.size());
+-    AES_ctr128_encrypt(&encData[0], decDataBuf, encData.size(), &aesKey, initVecBuf, countBuf, &num);
++    CRYPTO_ctr128_encrypt(&encData[0], decDataBuf, encData.size(), &aesKey, initVecBuf, countBuf, &num, (block128_f)AES_encrypt);
+ 
+     decData = std::vector<uint8_t>(decDataBuf, decDataBuf + encData.size());
+     return NoVAContentDecryptionBackend::DECRYPT_STATUS_OK;
