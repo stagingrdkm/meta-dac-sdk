@@ -271,3 +271,25 @@ Index: git/src/third_party/starboard/rdk/shared/player/player_internal.cc
  //   if (drm_system_)
  //   {
  //     cdmBackend = drm_system_->GetCDMBackend();
+Index: git/src/third_party/starboard/rdk/shared/player/NoVA/NoVABackend.h
+===================================================================
+--- git.orig/src/third_party/starboard/rdk/shared/player/NoVA/NoVABackend.h
++++ git/src/third_party/starboard/rdk/shared/player/NoVA/NoVABackend.h
+@@ -1,6 +1,7 @@
+ #pragma once
+ 
+-#include "wtf/Assertions.h"
++//#include "wtf/Assertions.h"
++#include <cassert>
+ #include "NoVABackendInterface.h"
+ #include "NoVASharedLibrary.h"
+ #include "NoVASharedLibraryManager.h"
+@@ -32,7 +33,7 @@ public:
+         NoVAMediaPlayerBackend* mediaPlayerBackend = mSharedLibrary->createMediaPlayerBackend(client, contentDecryptionBackend, windowManager);
+         if(!mediaPlayerBackend)
+         {
+-            LOG_ERROR("Could not create media player backend");
++            printf("Could not create media player backend");
+             return;
+         }
+         mMediaPlayerBackend = std::unique_ptr<NoVAMediaPlayerBackend>(mediaPlayerBackend);
