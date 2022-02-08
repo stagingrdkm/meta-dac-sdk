@@ -1,7 +1,7 @@
-Index: ocdm-nova/CMakeLists.txt
+Index: ocdmRialto/CMakeLists.txt
 ===================================================================
---- ocdm-nova.orig/CMakeLists.txt
-+++ ocdm-nova/CMakeLists.txt
+--- ocdmRialto.orig/CMakeLists.txt
++++ ocdmRialto/CMakeLists.txt
 @@ -14,7 +14,6 @@ set( CMAKE_INCLUDE_CURRENT_DIR ON )
  
  # Set local path for searching for cmake files
@@ -9,19 +9,11 @@ Index: ocdm-nova/CMakeLists.txt
 -find_package(WPEFramework)
  include_directories(include)
  
- set(LIB_OCDM_NOVA_SOURCES
-@@ -36,7 +35,6 @@ install(TARGETS ocdm-NoVA LIBRARY
- target_link_libraries(ocdm-NoVA PUBLIC
-        NoVA)
- 
--
- InstallPackageConfig(
-         TARGETS ocdm-NoVA
-         DESCRIPTION "OCDM library")
-Index: ocdm-nova/source/OpenCDMSession.cpp
+ set(LIB_OCDM_RIALTO_SOURCES
+Index: ocdmRialto/source/OpenCDMSession.cpp
 ===================================================================
---- ocdm-nova.orig/source/OpenCDMSession.cpp
-+++ ocdm-nova/source/OpenCDMSession.cpp
+--- ocdmRialto.orig/source/OpenCDMSession.cpp
++++ ocdmRialto/source/OpenCDMSession.cpp
 @@ -1,5 +1,7 @@
  #include <OpenCDMSession.h>
 -#include <WPEFramework/core/Trace.h>
@@ -29,19 +21,19 @@ Index: ocdm-nova/source/OpenCDMSession.cpp
 +#define TRACE_L1 printf
 +#define TRACE_L2 printf
  
- OpenCDMSession::OpenCDMSession(std::shared_ptr<nova::NoVAContentDecryptionBackend> cdm, const std::string& keySystem,
+ OpenCDMSession::OpenCDMSession(std::shared_ptr<rialto::client::ContentDecryptionBackend> cdm, const std::string& keySystem,
      const LicenseType& sessionType,
-@@ -158,4 +160,4 @@ nova::NoVAContentDecryptionBackend::Init
+@@ -158,4 +160,4 @@ rialto::client::ContentDecryptionBackend
      }
  
      return initDataType;
 -}
 \ No newline at end of file
 +}
-Index: ocdm-nova/source/open_cdm.cpp
+Index: ocdmRialto/source/open_cdm.cpp
 ===================================================================
---- ocdm-nova.orig/source/open_cdm.cpp
-+++ ocdm-nova/source/open_cdm.cpp
+--- ocdmRialto.orig/source/open_cdm.cpp
++++ ocdmRialto/source/open_cdm.cpp
 @@ -1,9 +1,12 @@
 +#include <cassert>
  #include <opencdm/open_cdm.h>
@@ -55,18 +47,18 @@ Index: ocdm-nova/source/open_cdm.cpp
 +#define TRACE_L2 printf
  
  
- extern "C" void* createNoVAContentDecryptionBackend(void* client);
-Index: ocdm-nova/source/open_cdm_adapter.cpp
+ extern "C" void* createContentDecryptionBackend(void* client);
+Index: ocdmRialto/source/open_cdm_adapter.cpp
 ===================================================================
---- ocdm-nova.orig/source/open_cdm_adapter.cpp
-+++ ocdm-nova/source/open_cdm_adapter.cpp
-@@ -1,21 +1,8 @@
+--- ocdmRialto.orig/source/open_cdm_adapter.cpp
++++ ocdmRialto/source/open_cdm_adapter.cpp
+@@ -1,21 +1,7 @@
  #include <opencdm/open_cdm_adapter.h>
  
 -OpenCDMError opencdm_gstreamer_session_decrypt_ex(struct OpenCDMSession* session, GstBuffer* buffer, GstBuffer* subSample, const uint32_t subSampleCount,
 -                                                   GstBuffer* IV, GstBuffer* keyID, uint32_t initWithLast15, GstCaps* caps)
 -{
--    //Decrypting is done on AVBus server side after pulling GsyBuffers from NVA sinks
+-    //Decrypting is done on Rialto server side after pulling GstBuffers from Rialto sinks
 -    //Do nothing now
 -    return ERROR_NONE;
 -}
@@ -76,11 +68,11 @@ Index: ocdm-nova/source/open_cdm_adapter.cpp
      GstBuffer* IV, GstBuffer* keyID, uint32_t initWithLast15)
  {
 -    return opencdm_gstreamer_session_decrypt_ex(session, buffer, subSample, subSampleCount, IV, keyID, initWithLast15, nullptr);
-+    return ERROR_NONE;
- }
- 
+-}
+-
 -OpenCDMError opencdm_gstreamer_transform_caps(GstCaps** caps)
 -{
--    return ERROR_NONE;
+     return ERROR_NONE;
 -}
 \ No newline at end of file
++} 

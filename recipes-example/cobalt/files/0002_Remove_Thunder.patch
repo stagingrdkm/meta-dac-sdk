@@ -250,46 +250,25 @@ Index: git/src/third_party/starboard/rdk/shared/linux_key_mapping.h
  };
  
  }  // namespace shared
-Index: git/src/third_party/starboard/rdk/shared/player/player_internal.cc
+Index: git/src/third_party/starboard/rdk/shared/player/Rialto/ClientBackend.h
 ===================================================================
---- git.orig/src/third_party/starboard/rdk/shared/player/player_internal.cc
-+++ git/src/third_party/starboard/rdk/shared/player/player_internal.cc
-@@ -49,7 +49,7 @@
- #include "third_party/starboard/rdk/shared/player/NoVA/NoVAGStreamerMSEAudioSink.h"
- 
- extern "C" {
--extern std::shared_ptr<nova::NoVAContentDecryptionBackend>  opencdm_get_backend();
-+   extern std::shared_ptr<nova::NoVAContentDecryptionBackend>  opencdm_get_backend();
- }
- 
- #if defined(USE_SKYQ_WINDOWMGR)
-@@ -1292,6 +1292,7 @@ PlayerImpl::PlayerImpl(SbPlayer player,
-   std::shared_ptr<nova::NoVABackendInterface> novaBackend = std::make_shared<nova::NoVABackend>();
- 
-   std::shared_ptr<nova::NoVAContentDecryptionBackend> cdmBackend = opencdm_get_backend();
-+
- //   if (drm_system_)
- //   {
- //     cdmBackend = drm_system_->GetCDMBackend();
-Index: git/src/third_party/starboard/rdk/shared/player/NoVA/NoVABackend.h
-===================================================================
---- git.orig/src/third_party/starboard/rdk/shared/player/NoVA/NoVABackend.h
-+++ git/src/third_party/starboard/rdk/shared/player/NoVA/NoVABackend.h
+--- git.orig/src/third_party/starboard/rdk/shared/player/Rialto/ClientBackend.h
++++ git/src/third_party/starboard/rdk/shared/player/Rialto/ClientBackend.h
 @@ -1,6 +1,7 @@
  #pragma once
  
 -#include "wtf/Assertions.h"
 +//#include "wtf/Assertions.h"
 +#include <cassert>
- #include "NoVABackendInterface.h"
- #include "NoVASharedLibrary.h"
- #include "NoVASharedLibraryManager.h"
+ #include "ClientBackendInterface.h"
+ #include "SharedLibrary.h"
+ #include "SharedLibraryManager.h"
 @@ -32,7 +33,7 @@ public:
-         NoVAMediaPlayerBackend* mediaPlayerBackend = mSharedLibrary->createMediaPlayerBackend(client, contentDecryptionBackend, windowManager);
+         MediaPlayerBackend* mediaPlayerBackend = mSharedLibrary->createMediaPlayerBackend(client, contentDecryptionBackend, windowManager);
          if(!mediaPlayerBackend)
          {
 -            LOG_ERROR("Could not create media player backend");
 +            printf("Could not create media player backend");
              return;
          }
-         mMediaPlayerBackend = std::unique_ptr<NoVAMediaPlayerBackend>(mediaPlayerBackend);
+         mMediaPlayerBackend = std::unique_ptr<MediaPlayerBackend>(mediaPlayerBackend);
