@@ -17,3 +17,7 @@ OCI_IMAGE_ENV_VARS += "HOME=/home/root/"
 OCI_IMAGE_ENV_VARS += "NF_DATA_DIR=/usr/share/netflix/bin/data"
 OCI_IMAGE_ENV_VARS += "NF_WRITE_DATA_PATH=/opt/netflix"
 OCI_IMAGE_ENV_VARS += "NETFLIX_VAULT=/opt/netflix-binfile.bin"
+OCI_IMAGE_ENV_VARS += "NF_CONSOLE=true"
+
+# Optional file - if the appbootkey does not exist at this path it will just use a blank appbootkey
+OCI_IMAGE_ENV_VARS += "NF_APPBOOT_KEY=/opt/netflix-appbootkey.key"

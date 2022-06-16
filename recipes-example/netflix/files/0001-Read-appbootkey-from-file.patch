@@ -1,0 +1,53 @@
+From a1c6d3f7a000f42d0492099ab40e9c0674c64617 Mon Sep 17 00:00:00 2001
+From: Stephen Foulds <stephen.foulds@consult.red>
+Date: Thu, 16 Jun 2022 09:47:39 +0100
+Subject: [PATCH] Read appbootkey from file
+
+---
+ partner/dpi/gstreamer/FileSystem.cpp | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
+
+diff --git a/partner/dpi/gstreamer/FileSystem.cpp b/partner/dpi/gstreamer/FileSystem.cpp
+index bdbd26e..d2c2d64 100644
+--- a/partner/dpi/gstreamer/FileSystem.cpp
++++ b/partner/dpi/gstreamer/FileSystem.cpp
+@@ -1332,18 +1332,27 @@ ISystem::KeyExchangeType FileSystem::getKeyExchangeType() const
+     return mKeyExchangeType;
+ }
+ 
+-std::string FileSystem::appbootKey() const {
++std::string FileSystem::appbootKey() const
++{
++  if (!sConfiguration->appbootKeyPath.empty())
++  {
++    DataBuffer::FromFileStatus status;
++    DataBuffer buffer = DataBuffer::fromFile(sConfiguration->appbootKeyPath, 2048, status);
+ 
+-#ifdef APPBOOTKEY
+-    std::string appbootKey = APPBOOTKEY;
+-#else
+-    #error "Appbootkey not defined in generated Appbootkey.h"
+-#endif //APPBOOTKEY
+-    if (!sConfiguration->appbootKeyPath.empty()) {
+-        appbootKey = DataBuffer::fromFile(sConfiguration->appbootKeyPath).toString();
++    // App boot key file exists
++    if (status == DataBuffer::FromFile_Ok)
++    {
++      Log::warn(TRACE_DPI, "Loading app boot key from %s", sConfiguration->appbootKeyPath.c_str());
++      return buffer.toString();
+     }
+ 
+-    return appbootKey;
++    // File doesn't exist
++    Log::warn(TRACE_DPI, "Could not find appbootkey at %s - returning empty key", sConfiguration->appbootKeyPath.c_str());
++    return "";
++  }
++
++  Log::warn(TRACE_DPI, "App boot key path not set - returning empty key");
++  return "";
+ }
+ 
+ void FileSystem::getVideoOutputResolution(uint32_t &width, uint32_t &height) const
+-- 
+2.25.1
+

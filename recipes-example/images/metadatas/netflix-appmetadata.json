@@ -33,6 +33,16 @@
                 "rbind",
                 "ro"
             ]
+        },
+        {
+            "source": "/opt/netflix-appbootkey.key",
+            "destination": "/opt/netflix-appbootkey.key",   
+            "type": "bind",
+            "options": [
+                "rbind",
+                "ro",
+                "X-dobby.optional"
+            ]
         }
     ]
 }
