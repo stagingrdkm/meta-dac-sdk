@@ -4,6 +4,8 @@ inherit  dac-image-essos
 
 IMAGE_INSTALL = "libcobalt"
 
+IMAGE_INSTALL_append = " ca-certificates"
+
 # needed
 OCI_IMAGE_ENTRYPOINT = "/usr/bin/cobalt_bin"
 APP_METADATA_PATH = "metadatas/cobalt-appmetadata.json"
