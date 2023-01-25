@@ -1,0 +1,43 @@
+{
+    "id": "com.rdk.netflix",
+    "type": "application/vnd.rdk-app.dac.native",
+    "version": "1.0.0",
+    "description": "DAC port of netflix 6 application",
+    "priority": "optional",
+    "graphics": true,
+    "network": {
+        "type": "open"
+    },
+    "storage": {
+        "persistent": [
+            {
+                "size": "100M",
+                "path": "/opt/netflix"
+            }
+        ]
+    },
+    "resources": {
+        "ram": "128M"
+    },
+    "features": [],
+    "mounts": [
+        {
+            "source": "/tmp/netflix/appbootkey.txt",
+            "destination": "/tmp/netflix/appbootkey.txt",
+            "type": "bind",
+            "options": [
+                "rbind",
+                "ro"
+            ]
+        },
+        {
+            "source": "/tmp/netflix/netflix.key",
+            "destination": "/tmp/netflix/netflix.key",
+            "type": "bind",
+            "options": [
+                "rbind",
+                "ro"
+            ]
+        }
+    ]
+}

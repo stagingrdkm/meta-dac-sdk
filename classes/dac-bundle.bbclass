@@ -13,6 +13,7 @@ make_bundle() {
     BUNDLE_TEMPLATE_PATH=${BUNDLEGEN_SYSROOTPATH}/templates
   fi
 
+  rm -rf ${TOPDIR}/bundles/
   mkdir -p ${IMGDEPLOYDIR}/bundle
   mkdir -p ${TOPDIR}/bundles/${BUNDLE_PLATFORM}
   tar -xf ${IMGDEPLOYDIR}/${IMAGE_BASENAME}.tar -C ${IMGDEPLOYDIR}/bundle
