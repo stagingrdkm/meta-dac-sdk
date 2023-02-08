@@ -19,6 +19,15 @@ Index: v0.1.0+gitAUTOINC+4015e49763-r0/git/sloci-image
  	    "Labels": $(json_string_map "$CFG_LABELS")
  	  },
  	  "rootfs": {
+@@ -309,7 +309,7 @@ oci_image_index() {
+ 	      "digest": "$manifest_digest",
+ 	      "platform": {
+ 	        "architecture": "$(oci_arch $CFG_ARCH)",
+-	        ${CFG_ARCH_VARIANT:+"\"variant\": $(json_string "$CFG_ARCH_VARIANT"),"}
++	        ${CFG_ARCH_VARIANT:+"$(json_string "variant"): $(json_string "$CFG_ARCH_VARIANT"),"}
+ 	        "os": "$CFG_OS"
+ 	      },
+ 	      "annotations": {
 @@ -425,6 +425,6 @@ if [ "$OUT_TYPE" = tar ]; then
  	file_name="$IMAGE_NAME-$CFG_REF_NAME-$CFG_ARCH"
  	file_name="$file_name${CFG_ARCH_VARIANT:+"-$CFG_ARCH_VARIANT"}-$CFG_OS.oci-image"
