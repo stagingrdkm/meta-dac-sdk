@@ -3,7 +3,7 @@ SECTION="devtools"
 LICENSE= "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=2b42edef8fa55315f34f2370b4715ca9"
 SRC_URI = " \
-   git://github.com/rdkcentral/BundleGen.git;protocol=http;branch=master;name=bundlegen-1.0;rev=51c917e64e17abca8fa61fd819d727e0317d1f27"
+   git://github.com/rdkcentral/BundleGen.git;protocol=http;branch=master;name=bundlegen-1.0;rev=10aac73dd1ae43cb1ae89aecf9a37a8f49b49bdb"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}:"
 SRC_URI+= "file://test.sh"
@@ -24,6 +24,6 @@ FILES_${PN} = "${D}{prefix}/test.sh"
 do_install_append() { 
  install -d ${D}${datadir}/${BPN}/templates
  install -m755 ${S}/templates/generic/rpi*.json ${D}${datadir}/${BPN}/templates/
- install -m755 ${S}/test/testapp.sh ${D}${datadir}/${BPN}/
+ install -m755 ${S}/test/testapp_lisa.sh ${D}${datadir}/${BPN}/testapp.sh
  install -m755 ${WORKDIR}/test.sh ${D}${datadir}/${BPN}/
 }

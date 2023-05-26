@@ -1,0 +1,70 @@
+Index: git/media/server/main/source/MediaKeySession.cpp
+===================================================================
+--- git.orig/media/server/main/source/MediaKeySession.cpp
++++ git/media/server/main/source/MediaKeySession.cpp
+@@ -116,7 +116,7 @@ MediaKeyErrorStatus MediaKeySession::gen
+         else
+         {
+             m_isSessionConstructed = true;
+-            if (kNetflixKeySystem == m_kKeySystem)
++            if (kNetflixKeySystem == m_kKeySystem || kPlayreadyKeySystem == m_kKeySystem)
+             {
+                 // Ocdm-playready netflix does not notify onProcessChallenge when complete.
+                 // Fetch the challenge manually.
+@@ -179,7 +179,7 @@ MediaKeyErrorStatus MediaKeySession::upd
+     initOcdmErrorChecking();
+ 
+     MediaKeyErrorStatus status;
+-    if (kNetflixKeySystem == m_kKeySystem)
++    if (kNetflixKeySystem == m_kKeySystem || kPlayreadyKeySystem == m_kKeySystem)
+     {
+         status = m_ocdmSession->storeLicenseData(&responseData[0], responseData.size());
+         if (MediaKeyErrorStatus::OK != status)
+@@ -248,7 +248,7 @@ MediaKeyErrorStatus MediaKeySession::clo
+     initOcdmErrorChecking();
+ 
+     MediaKeyErrorStatus status;
+-    if (kNetflixKeySystem == m_kKeySystem)
++    if (kNetflixKeySystem == m_kKeySystem || kPlayreadyKeySystem == m_kKeySystem)
+     {
+         if (MediaKeyErrorStatus::OK != m_ocdmSession->cancelChallengeData())
+         {
+@@ -396,7 +396,7 @@ MediaKeyErrorStatus MediaKeySession::sel
+ 
+ bool MediaKeySession::isNetflixKeySystem() const
+ {
+-    return (kNetflixKeySystem == m_kKeySystem);
++    return  (kNetflixKeySystem == m_kKeySystem || kPlayreadyKeySystem == m_kKeySystem);
+ }
+ 
+ void MediaKeySession::onProcessChallenge(const char url[], const uint8_t challenge[], const uint16_t challengeLength)
+Index: git/media/client/main/source/MediaKeys.cpp
+===================================================================
+--- git.orig/media/client/main/source/MediaKeys.cpp
++++ git/media/client/main/source/MediaKeys.cpp
+@@ -56,6 +56,7 @@ std::unique_ptr<IMediaKeys> MediaKeysFac
+     return mediaKeys;
+ }
+ const std::string kNetflixKeySystem{"com.netflix.playready"};
++const std::string kPlayreadyKeySystem{"com.microsoft.playready"};
+ }; // namespace firebolt::rialto
+ 
+ namespace firebolt::rialto::client
+@@ -103,7 +104,7 @@ MediaKeyErrorStatus MediaKeys::createKey
+     RIALTO_CLIENT_LOG_DEBUG("entry:");
+ 
+     auto result{m_mediaKeysIpc->createKeySession(sessionType, client, isLDL, keySessionId)};
+-    if (kNetflixKeySystem == m_keySystem && MediaKeyErrorStatus::OK == result)
++    if ((kNetflixKeySystem == m_keySystem || kPlayreadyKeySystem == m_keySystem) && MediaKeyErrorStatus::OK == result)
+     {
+         KeyIdMap::instance().addSession(keySessionId);
+     }
+@@ -142,7 +143,7 @@ MediaKeyErrorStatus MediaKeys::setDrmHea
+ MediaKeyErrorStatus MediaKeys::closeKeySession(int32_t keySessionId)
+ {
+     RIALTO_CLIENT_LOG_DEBUG("entry:");
+-    if (kNetflixKeySystem == m_keySystem)
++    if (kNetflixKeySystem == m_keySystem || kPlayreadyKeySystem == m_keySystem)
+     {
+         KeyIdMap::instance().erase(keySessionId);
+     }

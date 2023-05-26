@@ -1,0 +1,75 @@
+Temp workaround for:
+RIALTO-222 Audio not working for Amazon Prime app
+https://jira.rdkcentral.com/jira/browse/RIALTO-222
+
+Index: git/source/BufferParser.cpp
+===================================================================
+--- git.orig/source/BufferParser.cpp
++++ git/source/BufferParser.cpp
+@@ -106,6 +106,27 @@ void BufferParser::addProtectionMetadata
+ void BufferParser::addCodecDataToSegment(std::unique_ptr<firebolt::rialto::IMediaPipeline::MediaSegment> &segment,
+                                          GstStructure *structure)
+ {
++
++    //GST_ERROR("ptrekels addCodecDataToSegment is called");
++    const gchar *codec_data_str = gst_structure_get_string(structure, "codec_data");
++    if (codec_data_str)
++    {
++                //GST_ERROR("ptrekels Got codec_data: %s", codec_data_str);
++                segment->setCodecData(
++                    std::make_shared<std::vector<std::uint8_t>>(codec_data_str, codec_data_str+ strlen(codec_data_str) + 1));
++
++                //gchar *codec_data_str_copy = g_strdup(codec_data_str);
++                //segment->setCodecData(
++                //    std::make_shared<std::vector<std::uint8_t>>(codec_data_str_copy, codec_data_str_copy + strlen(codec_data_str_copy) + 1));
++
++                //const gchar *codecDataFixed = "11900800";
++                //segment->setCodecData(
++                //    std::make_shared<std::vector<std::uint8_t>>(codecDataFixed, codecDataFixed + strlen(codecDataFixed) + 1));
++    } else {
++                GST_ERROR("ptrekels Failed to read codec_data");
++    }
++
++/*
+     const GValue *codec_data;
+     codec_data = gst_structure_get_value(structure, "codec_data");
+     if (codec_data)
+@@ -125,6 +146,7 @@ void BufferParser::addCodecDataToSegment
+             }
+         }
+     }
++*/
+ }
+ 
+ std::unique_ptr<IMediaPipeline::MediaSegment>
+Index: git/source/RialtoGStreamerMSEBaseSink.cpp
+===================================================================
+--- git.orig/source/RialtoGStreamerMSEBaseSink.cpp
++++ git/source/RialtoGStreamerMSEBaseSink.cpp
+@@ -792,6 +792,17 @@ std::shared_ptr<std::vector<std::uint8_t
+ {
+     std::shared_ptr<std::vector<std::uint8_t>> codecData;
+ 
++    //GST_ERROR("ptrekels rialto_mse_base_sink_get_codec_data called");
++    const gchar *codec_data = gst_structure_get_string( structure, "codec_data");
++    if (codec_data)
++    {
++                //GST_ERROR("ptrekels Got codec_data: %s", codec_data);
++                codecData = 
++                    std::make_shared<std::vector<std::uint8_t>>(codec_data, codec_data + strlen(codec_data) + 1);
++    } else {
++                GST_ERROR("ptrekels Failed to read codec_data");
++    }
++/*
+     const GValue *codec_data;
+     codec_data = gst_structure_get_value(structure, "codec_data");
+     if (codec_data)
+@@ -811,7 +822,7 @@ std::shared_ptr<std::vector<std::uint8_t
+             }
+         }
+     }
+-
++*/
+     return codecData;
+ }
+ 

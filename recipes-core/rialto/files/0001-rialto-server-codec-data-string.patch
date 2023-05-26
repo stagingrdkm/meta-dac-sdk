@@ -1,0 +1,56 @@
+Temp workaround for:
+RIALTO-222 Audio not working for Amazon Prime app
+https://jira.rdkcentral.com/jira/browse/RIALTO-222
+
+Index: git/media/server/gstplayer/source/tasks/generic/AttachSource.cpp
+===================================================================
+--- git.orig/media/server/gstplayer/source/tasks/generic/AttachSource.cpp
++++ git/media/server/gstplayer/source/tasks/generic/AttachSource.cpp
+@@ -73,10 +73,16 @@ protected:
+         if (codecData)
+         {
+             gpointer memory = m_glibWrapper->gMemdup(codecData->data(), codecData->size());
+-            GstBuffer *buf = m_gstWrapper->gstBufferNewWrapped(memory, codecData->size());
+-            m_gstWrapper->gstCapsSetSimple(caps, "codec_data", GST_TYPE_BUFFER, buf, nullptr);
+-            m_gstWrapper->gstBufferUnref(buf);
++            //RIALTO_SERVER_LOG_ERROR("Got codec_data %s len %d %d", (gchar*)memory, codecData->size(), strlen((gchar*)memory));
++            m_gstWrapper->gstCapsSetSimple(caps, "codec_data", G_TYPE_STRING, (gchar*)memory, nullptr);
++
++        } else {
++            RIALTO_SERVER_LOG_ERROR("Failed to get codec_data");
+         }
++        //const gchar *codecDataStr = "11900800";
++        //m_gstWrapper->gstCapsSetSimple(caps, "codec_data", G_TYPE_STRING, codecDataStr, nullptr);
++        //m_gstWrapper->gstCapsSetSimple(caps, "framed", G_TYPE_BOOLEAN, true, nullptr);
++        //m_gstWrapper->gstCapsSetSimple(caps, "enable-svp", G_TYPE_BOOLEAN, true, nullptr);
+     }
+ 
+     void addStreamFormatToCaps(GstCaps *caps) const
+Index: git/media/server/gstplayer/source/GstGenericPlayer.cpp
+===================================================================
+--- git.orig/media/server/gstplayer/source/GstGenericPlayer.cpp
++++ git/media/server/gstplayer/source/GstGenericPlayer.cpp
+@@ -578,9 +578,8 @@ void GstGenericPlayer::updateAudioCaps(i
+         if (codecData)
+         {
+             gpointer memory = m_glibWrapper->gMemdup(codecData->data(), codecData->size());
+-            GstBuffer *buf = m_gstWrapper->gstBufferNewWrapped(memory, codecData->size());
+-            m_gstWrapper->gstCapsSetSimple(newCaps, "codec_data", GST_TYPE_BUFFER, buf, nullptr);
+-            m_gstWrapper->gstBufferUnref(buf);
++            //RIALTO_SERVER_LOG_ERROR("Got codec_data %s len %d %d", (gchar*)memory, codecData->size(), strlen((gchar*)memory));
++            m_gstWrapper->gstCapsSetSimple(newCaps, "codec_data", G_TYPE_STRING, (gchar*)memory, nullptr);
+             capsChanged = true;
+         }
+         if (capsChanged)
+@@ -613,9 +612,8 @@ void GstGenericPlayer::updateVideoCaps(i
+         if (codecData)
+         {
+             gpointer memory = m_glibWrapper->gMemdup(codecData->data(), codecData->size());
+-            GstBuffer *buf = m_gstWrapper->gstBufferNewWrapped(memory, codecData->size());
+-            m_gstWrapper->gstCapsSetSimple(newCaps, "codec_data", GST_TYPE_BUFFER, buf, nullptr);
+-            m_gstWrapper->gstBufferUnref(buf);
++            //RIALTO_SERVER_LOG_ERROR("Got codec_data %s len %d %d", (gchar*)memory, codecData->size(), strlen((gchar*)memory));
++            m_gstWrapper->gstCapsSetSimple(newCaps, "codec_data", G_TYPE_STRING, (gchar*)memory, nullptr);
+         }
+ 
+         m_gstWrapper->gstAppSrcSetCaps(GST_APP_SRC(m_context.videoAppSrc), newCaps);

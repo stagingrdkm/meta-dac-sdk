@@ -3,11 +3,99 @@ Index: git/CMakeLists.txt
 ===================================================================
 --- git.orig/CMakeLists.txt
 +++ git/CMakeLists.txt
-@@ -29,7 +29,6 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
- include( CheckCXXCompilerFlag )
+@@ -37,7 +37,6 @@ add_compile_options(
+ )
  
  find_package( Rialto REQUIRED )
 -find_package( ocdm REQUIRED )
  find_package( PkgConfig REQUIRED )
  pkg_check_modules( GStreamerApp REQUIRED IMPORTED_TARGET gstreamer-app-1.0 )
+ 
+Index: git/source/OpenCDMSession.cpp
+===================================================================
+--- git.orig/source/OpenCDMSession.cpp
++++ git/source/OpenCDMSession.cpp
+@@ -86,7 +86,7 @@ bool OpenCDMSession::initialize()
+     {
+         if (!mCdmBackend->createKeySession(mSessionType, false, mRialtoSessionId))
+         {
+-            TRACE_L1("Failed to create a session. Got status %u and drm error %u", static_cast<unsigned int>(status),
++            TRACE_L1("Failed to create a session. Got status %u and drm error %u", static_cast<unsigned int>(0/*status*/),
+                      getLastDrmError());
+             return false;
+         }
+@@ -108,7 +108,7 @@ bool OpenCDMSession::initialize(bool isL
+     {
+         if (!mCdmBackend->createKeySession(mSessionType, isLDL, mRialtoSessionId))
+         {
+-            TRACE_L1("Failed to create a session. Got status %u and drm error %u", static_cast<unsigned int>(status),
++            TRACE_L1("Failed to create a session. Got status %u and drm error %u", static_cast<unsigned int>(0/*status*/),
+                      getLastDrmError());
+             return false;
+         }
+@@ -141,7 +141,7 @@ bool OpenCDMSession::generateRequest(con
+         else
+         {
+             TRACE_L1("Failed to request for the session. Got status %u and drm error %u",
+-                     static_cast<unsigned int>(status), getLastDrmError());
++                     static_cast<unsigned int>(0/*status*/), getLastDrmError());
+         }
+     }
+ 
+@@ -166,7 +166,7 @@ bool OpenCDMSession::loadSession()
+         }
+         else
+         {
+-            TRACE_L1("Failed to load the session. Got status %u and drm error %u", static_cast<unsigned int>(status),
++            TRACE_L1("Failed to load the session. Got status %u and drm error %u", static_cast<unsigned int>(0/*status*/),
+                      getLastDrmError());
+         }
+     }
+@@ -192,7 +192,7 @@ bool OpenCDMSession::updateSession(const
+         }
+         else
+         {
+-            TRACE_L1("Failed to update the session. Got status %u and drm error %u", static_cast<unsigned int>(status),
++            TRACE_L1("Failed to update the session. Got status %u and drm error %u", static_cast<unsigned int>(0/*status*/),
+                      getLastDrmError());
+         }
+     }
+@@ -217,7 +217,7 @@ bool OpenCDMSession::getChallengeData(st
+         else
+         {
+             TRACE_L1("Failed to request for the session. Got status %u and drm error %u",
+-                     static_cast<unsigned int>(status), getLastDrmError());
++                     static_cast<unsigned int>(0/*status*/), getLastDrmError());
+             return false;
+         }
+     }
+@@ -293,7 +293,11 @@ bool OpenCDMSession::addProtectionMeta(G
+         const GValue *value = gst_structure_get_value(info, "iv");
+         if (value)
+         {
++            TRACE_L1("ocdm before gst_vlaue_get_buffer");
++            printf("printf before gst_vlaue_get_buffer");
+             GstBuffer *ivBuffer = gst_value_get_buffer(value);
++            TRACE_L1("ocdm after gst_vlaue_get_buffer");
++            printf("printf ocdm after gst_vlaue_get_buffer");
+             // Set iv size
+             gst_structure_set(info, "iv_size", G_TYPE_UINT, gst_buffer_get_size(ivBuffer), NULL);
+         }
+@@ -331,7 +335,7 @@ bool OpenCDMSession::closeSession()
+         }
+         else
+         {
+-            TRACE_L1("Failed to close the session. Got status %u", static_cast<unsigned int>(status));
++            TRACE_L1("Failed to close the session. Got status %u", static_cast<unsigned int>(0/*status*/));
+         }
+     }
+ 
+@@ -356,7 +360,7 @@ bool OpenCDMSession::removeSession()
+         }
+         else
+         {
+-            TRACE_L1("Failed to remove the session. Got status %u", static_cast<unsigned int>(status));
++            TRACE_L1("Failed to remove the session. Got status %u", static_cast<unsigned int>(0/*status*/));
+         }
+     }
  

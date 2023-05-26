@@ -1,0 +1,43 @@
+{
+    "id": "com.rdk.amazonprime",
+    "type": "application/vnd.rdk-app.dac.native",
+    "version": "1.0.0",
+    "description": "DAC port of amazon prime 5 application",
+    "priority": "optional",
+    "graphics": true,
+    "network": {
+        "type": "open"
+    },
+    "storage": {
+        "persistent": [
+            {
+                "size": "10M",
+                "path": "/usr/persist"
+            }
+        ]
+    },
+    "resources": {
+        "ram": "128M"
+    },
+    "features": [],
+    "mounts": [
+        {
+            "source": "/tmp/gst",
+            "destination": "/tmp/gst",
+            "type": "bind",
+            "options": [
+                "rbind",
+                "rw"
+            ]
+        },
+        {
+            "source": "/usr/lib/libWPEFrameworkCryptography.so.2.1.11",
+            "destination": "/usr/lib/libWPEFrameworkCryptography.so.2.1.11",
+            "type": "bind",
+            "options": [
+                "rbind",
+                "ro"
+            ]
+        }
+    ]
+}
