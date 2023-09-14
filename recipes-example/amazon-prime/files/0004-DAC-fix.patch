@@ -1,0 +1,13 @@
+Index: implementation/src/media-pipeline-backend/GStreamerPipeline.cpp
+===================================================================
+--- implementation.orig/src/media-pipeline-backend/GStreamerPipeline.cpp
++++ implementation/src/media-pipeline-backend/GStreamerPipeline.cpp
+@@ -459,7 +459,7 @@ static int64_t read_and_update_position(
+ // This value is very similar to the top of the buffer.
+ // Hotfix under 'else' branch gets PTS from decoder directly.
+ // But it leads to non-smoothly changing trickbar position and time on display.
+-#if 0
++#if 1
+         int64_t time = 0;
+         if(gst_element_query_position(cdata->pipeline, GST_FORMAT_TIME, &time) && time > 0) {
+             cdata->last_pos.store(time);

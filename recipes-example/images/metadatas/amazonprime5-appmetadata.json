@@ -14,6 +14,12 @@
                 "size": "10M",
                 "path": "/usr/persist"
             }
+        ],
+        "temp": [
+            {
+                "size": "100M",
+                "path": "/usr/tmp"
+            }
         ]
     },
     "resources": {

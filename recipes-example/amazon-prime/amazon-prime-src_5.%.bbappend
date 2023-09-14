@@ -1,14 +1,15 @@
 TARGET_BUILD_TYPE = "ignition_with_device_layer"
 
-AMAZON_SDK_URL = "http://127.0.0.1/avpk-v5.tgz;subdir=${PN}-${PV};name=avpk"
-SRC_URI[avpk.md5sum] = "6acf4f85aba0e1c12ffccf0fd25ea47c"
-SRC_URI[avpk.sha256sum] = "4b2de678951961faba2bb115943ef0948a2e605e5893e7d0c7e7a5453e5e39d9"
+AMAZON_SDK_URL = "http://127.0.0.1/avpk-v5.0.3.tgz;subdir=${PN}-${PV};name=avpk"
+SRC_URI[avpk.md5sum] = "4a29b8bbb4a89da63db284b9e5efc05d"
+SRC_URI[avpk.sha256sum] = "c4175531d07fa3381fdecdb301e6e08321a90d83f8262380feda5019712e3a02"
 
 S = "${WORKDIR}/amazon-prime-src-5.0/amazonvideoportingkit/ignition/"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 SRC_URI += "file://0002-fix-iv.patch;patchdir=../../../git/rdk-linux-device-layer/implementation"
 SRC_URI += "file://0003-ocdm-rialto.patch;patchdir=../../../git/rdk-linux-device-layer/implementation"
+SRC_URI += "file://0004-DAC-fix.patch;patchdir=../../../git/rdk-linux-device-layer/implementation"
 
 DEPENDS += "openssl c-ares nodejs-native caps wpeframework-ocdm-headers rialto-ocdm"
 RDEPENDS_${PN} += "rdk-gstreamer-utils rialto-ocdm"
@@ -26,3 +27,8 @@ LDFLAGS_remove = "-lcap"
 
 # TODO: check why this is failing
 INSANE_SKIP_${PN} += "installed-vs-shipped"
+
+# use latest lgi-int branch
+SRC_URI_remove = "${CMF_GIT_ROOT}/apps/amazon/AVPK5;protocol=${CMF_GIT_PROTOCOL};branch=${CMF_GIT_BRANCH}"
+SRC_URI += "${CMF_GIT_ROOT}/apps/amazon/AVPK5;protocol=${CMF_GIT_PROTOCOL};branch=lgi-int"
+SRCREV = "20a8da1c204fda1a76880e47e80047fae3af98e3"
