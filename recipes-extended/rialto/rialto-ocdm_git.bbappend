@@ -1,6 +1,3 @@
 DEPENDS_remove = "wpeframework-clientlibraries"
 DEPENDS += "wpeframework-ocdm-headers"
 
-require rialto_revision.inc
-
-SRCREV = "${RIALTO_GSTREAMER_VERSION}"
