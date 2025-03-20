@@ -10,3 +10,6 @@ do_install_prepend() {
 }
 
 RDEPENDS_${PN}_remove = "rdkperf"
+
+SRC_URI_remove = "file://0001-DELIA-64727-Prealloc-secure-memory-before-decrypt.patch"
+SRC_URI += "file://0001-DELIA-64727-Prealloc-secure-memory-before-decrypt-rebased.patch"

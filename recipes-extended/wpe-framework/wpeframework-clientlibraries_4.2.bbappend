@@ -8,3 +8,8 @@ do_install_prepend() {
 }
 
 RDEPENDS_${PN}_remove = "rdkperf"
+
+FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+
+SRC_URI_remove = "file://0001-check-_session-has-a-valid-pointer.patch"
+SRC_URI += "file://0001-check-session-has-a-valid-pointer-rebased.patch"
