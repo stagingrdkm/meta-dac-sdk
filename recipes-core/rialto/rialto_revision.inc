@@ -1,0 +1,5 @@
+#Rialto revisions
+RIALTO_VERSION ?= "v0.9.2"
+RIALTO_OCDM_VERSION ?= "v0.8.0"
+RIALTO_GSTREAMER_VERSION ?= "v0.9.1"
+
