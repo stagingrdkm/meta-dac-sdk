@@ -1,0 +1,37 @@
+From: Stefan Verkoyen <sverkoyen.contractor@libertyglobal.com>
+Subject: Remove crash reporting to ensure stripped netflix
+
+  Disabling crash reporting (NRDP_HAS_CRASH_REPORTING=0) caused
+  build errors.
+
+Index: netflix/src/platform/gibbon/SignalHandler.cpp
+===================================================================
+--- netflix.orig/src/platform/gibbon/SignalHandler.cpp
++++ netflix/src/platform/gibbon/SignalHandler.cpp
+@@ -1305,7 +1305,9 @@ void SignalHandler::handleSignal(int /*s
+         stackTrace = CrashInfo::getBacktrace();
+     } else {
+         inStackUnwind = 1;
++#if defined(NRDP_HAS_CRASH_REPORTING)
+         stackTrace.set_callback(&unwind_callback, reinterpret_cast<void*>(sCrashFD));
++#endif
+         stackTrace.set_context(_ctx, siaddr);
+ 
+         sigHandlerBackup.error_addr = error_addr;
+@@ -1331,6 +1333,7 @@ afterUnwind:
+     inStackUnwind = 0;
+ 
+ // TODO: Move to use YAML only and not set a variant for JSON.
++#if defined(NRDP_HAS_CRASH_REPORTING)
+ #define ___YAML_ARRAY_START "- "
+ #define ___YAML_ARRAY_INDENT "  "
+ #define __YAML_ARRAY_START_PREFIX(key) ___YAML_ARRAY_START key
+@@ -1628,6 +1631,8 @@ afterUnwind:
+     nflx1::writeString(sCrashFD, "...", 3);
+     nflx1::writeNewLine(sCrashFD);
+ 
++#endif // NRDP_HAS_CRASH_REPORTING
++
+ #if defined(NRDP_HAS_CRASH_REPORT)
+     if(Configuration::backtraceThreads()) { // try to write from threads
+         const std::vector<ThreadConfig*> configs = ThreadConfig::allConfigs();
