@@ -22,6 +22,12 @@ SRC_URI += "file://0015-netflix-ui-in-1080p.patch;patchdir=${WORKDIR}/git"
 EXTRA_OECMAKE_remove = "-DGIBBON_PLATFORM=${S}/../../git/partner/platform/thunder-manager"
 ###
 
+### Disable crashreporting to ensure stripping of binary
+SRC_URI += "file://0005-fix-signalhandler-disabled-crashreporting.patch"
+EXTRA_OECMAKE_remove = "-DNRDP_HAS_CRASH_REPORTING=1"
+EXTRA_OECMAKE += "-DNRDP_HAS_CRASH_REPORTING=0"
+###
+
 APPBOOTKEY = ""
 DEVICEMODEL = "reference-image"
 MINAUDIOPTSGAP = "0"
